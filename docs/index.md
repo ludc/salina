@@ -1,6 +1,6 @@
-# SaLinA: SaLinA - A Flexible and Simple Library for Learning Sequential Agents (including Reinforcement Learning)
+# SaLinA
 
-**Documentation**:[Read the docs](https://salina.readthedocs.io/en/latest/)
+SaLinA - A Flexible and Simple Library for Learning Sequential Agents (including Reinforcement Learning)
 
 ## TL;DR
 
@@ -24,29 +24,6 @@ Link to the paper: [SaLinA: Sequential Learning of Agents](https://arxiv.org/abs
     }
 
 ```
-
-## News
-* November 2021:
-* * Complete core documentation: [Read the docs](https://salina.readthedocs.io/en/latest/)
-
-* October 2021:
-* * Week 8th of November
-* * * Include [Decision Transformers](https://arxiv.org/abs/2106.01345)
-* * * Include ["A Simple Way to Initialize Recurrent Networks of Rectified Linear Units"](https://arxiv.org/abs/1504.00941)
-* * * **FIX: ** To avoid compatibility issues with openAI gym, the `salina/agents/gym.py` file as been renamed as `salina/agents/gyma.py`
-* * Week 25th of october
-* * * Updated documentation
-* * * [Transformer-based Agents](salina/agents/transformers.py)
-* * * [Behavioral Cloning over complete episodes](salina_examples/offline_rl/bc_on_full_episodes)
-* * * * [With](salina_examples/offline_rl/bc_on_full_episodes/gym_transformer.yaml) and [without](salina_examples/offline_rl/bc_on_full_episodes/gym.yaml) transformers
-* * * [PPO on Brax with Transformers](salina_examples/rl/ppo_brax_transformer)
-* * Week 18th of october
-* * * Release of the library
-* * * Various bug fixes
-* * * Add train and eval mode in the RemoteAgent and NRemoteAgent
-* * * [Cleaning of the BRAX PPO Implementation](salina_examples/rl/ppo_brax) to make it similar to other implementations
-* * * [Cleaning of the Behavioral Cloning implementation](salina_examples/offline_rl/bc)
-
 ## Quick Start
 
 * Just clone the repo
@@ -54,28 +31,18 @@ Link to the paper: [SaLinA: Sequential Learning of Agents](https://arxiv.org/abs
 
 ### Documentation
 
-* [Read the docs](https://salina.readthedocs.io/en/latest/)
-* [Principles of the library](md_docs/)
-* [Examples and Algorithms](salina_examples/)
-* [Tutorial through multiple A2C implementations](salina_examples/rl/a2c)
-* [Reinforcement Learning Benchmark](salina_examples/rl/BENCHMARK.md)
+* [Arxiv Paper](https://arxiv.org/abs/2110.07910)
+
+* [Principles of the library](principles/)
+* [Examples and Algorithms](https://github.com/facebookresearch/salina/tree/main/salina_examples/)
+* [Tutorial through multiple A2C implementations](https://github.com/facebookresearch/salina/tree/main/salina_examples/rl/a2c)
+* [Reinforcement Learning Benchmark](https://github.com/facebookresearch/salina/tree/main/salina_examples/rl/BENCHMARK.md)
 * Video Tutorials:
 * * [Tutorial 1: Agent and Workspace](https://youtu.be/CSkkoq_k5zU)
 * * [Tutorial 2: Multi-CPUs](https://youtu.be/I-trJWUJDMo)
 * * [Tutorial 3: Implementing A2C](https://youtu.be/Mec8GEEQYhU)
 * * [Tutorial 4: A2C on multi-CPUs](https://youtu.be/euDqlmcC_1Q)
-* [Arxiv Paper](https://arxiv.org/abs/2110.07910)
 
-## A note on transformers
-
-We include both classical pytorch transformers, and [xformers-based](https://github.com/facebookresearch/xformers) implementations. On the [Behavioral Cloning](https://github.com/facebookresearch/salina/tree/main/salina_examples/offline_rl/bc_on_full_episodes) examples xformers-based models perform faster than classical pytorch implementations since they benefit from the use of sparse attention. Here is a small table describing the obtained results.
-
-| n transitions (in the past) |             5 |             10 |            50 |           100 | All previous transitions (episode size is 1000 transitions) |
-|-----------------------------|--------------:|---------------:|--------------:|--------------:|-------------------------------------------------------------|
-| xformers                    | 1200K / 2.3Gb | 1000K / 2.3 Gb | 890K / 2.5 Gb | 810K / 2.1 Gb | 390K / 3.8 Gb                                               |
-| pytorch                     | 460K / 4.5 Gb | 460K / 4.5 Gb  | 460K / 4.5 Gb | 460K / 4.5 Gb | 460K / 4.5 Gb                                               |
-
-The table contains the number of transitions processed per second (during learning) and the memory used (using GPU)
 
 **For development, set up [pre-commit](https://pre-commit.com) hooks:**
 
@@ -88,9 +55,9 @@ The table contains the number of transitions processed per second (during learni
 
 ## Organization of the repo
 
-* [salina](salina/) is the core library
-  * [salina.agents](salina/agents/) is the catalog of agents (the same as `torch.nn` but for agents)
-* [salina_examples](salina_examples/) provide many examples (in different domains)
+* [salina](https://github.com/facebookresearch/salina/tree/main/salina/) is the core library
+  * [salina.agents](https://github.com/facebookresearch/salina/tree/main/salina/agents/) is the catalog of agents (the same as `torch.nn` but for agents)
+* [salina_examples](https://github.com/facebookresearch/salina/tree/main/salina_examples/) provide many examples (in different domains)
 
 ## Dependencies
 
@@ -98,7 +65,7 @@ The table contains the number of transitions processed per second (during learni
 
 ## Note on the logger
 
-We provide a simple Logger that logs in both tensorboard format, but also as pickle files that can be re-read to make tables and figures. See [logger](salina/logger.py). This logger can be easily replaced by any other logger.
+We provide a simple Logger that logs in both tensorboard format, but also as pickle files that can be re-read to make tables and figures. See [logger](https://github.com/facebookresearch/salina/tree/main/    salina/logger.py). This logger can be easily replaced by any other logger.
 
 # Description
 

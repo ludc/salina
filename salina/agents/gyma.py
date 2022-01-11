@@ -19,7 +19,7 @@ def _format_frame(frame):
         return r
     elif isinstance(frame, list):
         t = torch.tensor(frame).unsqueeze(0)
-        if t.dtype == torch.float64:
+        if t.dtype == torch.float64 or t.dtype == torch.float32:
             t = t.float()
         else:
             t = t.long()
@@ -67,11 +67,8 @@ def _torch_cat_dict(d):
 
 
 class GymAgent(TAgent):
-    """A agent corresponding to a Gym environment.
-    The agent reads the action at t-1, and produces many variables
-    If t==0, then the environments are reset
+    """ Create an Agent from a gyn environment
     """
-
     def __init__(
         self,
         make_env_fn=None,
@@ -79,8 +76,20 @@ class GymAgent(TAgent):
         n_envs=None,
         input="action",
         output="env/",
+        use_seed=True
     ):
+        """ Create an agent from a Gym environment
+
+        Args:
+            make_env_fn ([function that returns a gym.Env]): The function to create a single gym environments
+            make_env_args (dict): The arguments of the function that creates a gym.Env
+            n_envs ([int]): The number of environments to create.
+            input (str, optional): [the name of the action variable in the workspace]. Defaults to "action".
+            output (str, optional): [the output prefix of the environment]. Defaults to "env/".
+            use_seed (bool, optional): [If True, then the seed is chained to the environments, and each environment will have its own seed]. Defaults to True.
+        """
         super().__init__()
+        self.use_seed=use_seed
         assert n_envs > 0
         self.envs = None
         self.env_args = make_env_args
@@ -94,8 +103,9 @@ class GymAgent(TAgent):
     def _initialize_envs(self, n):
         assert self._seed is not None, "[GymAgent] seeds must be specified"
         self.envs = [self.make_env_fn(**self.env_args) for k in range(n)]
-        for k in range(n):
-            self.envs[k].seed(self._seed + k)
+        if self.use_seed:
+            for k in range(n):
+                self.envs[k].seed(self._seed + k)
         self.timestep = 0
         self.finished = torch.tensor([True for e in self.envs])
         self.timestep = torch.tensor([0 for e in self.envs])
@@ -142,9 +152,8 @@ class GymAgent(TAgent):
                 "done": torch.tensor([True]),
                 "initial_state": torch.tensor([False]),
                 "reward": torch.tensor([0.0]).float(),
-                "cumulated_reward": torch.tensor([self.cumulated_reward[k]]),
+                "cumulated_reward": torch.tensor([self.cumulated_reward[k]]).float(),
                 "timestep": torch.tensor([self.timestep[k]]),
-                "cumulated_reward": torch.tensor([self.cumulated_reward[k]]),
             }
         self.timestep[k] += 1
         env = self.envs[k]
@@ -214,9 +223,10 @@ class GymAgent(TAgent):
 
     def seed(self, seed):
         self._seed = seed
-        if not self.envs is None:
-            for k, e in enumerate(self.envs):
-                e.seed(self._seed + k)
+        if self.use_seed:
+            if not self.envs is None:
+                for k, e in enumerate(self.envs):
+                    e.seed(self._seed + k)
 
 
 class AutoResetGymAgent(TAgent):
@@ -229,8 +239,20 @@ class AutoResetGymAgent(TAgent):
         n_envs=None,
         input="action",
         output="env/",
+        use_seed=True,
     ):
+        """ Create an agent from a Gym environment  with Autoreset
+
+        Args:
+            make_env_fn ([function that returns a gym.Env]): The function to create a single gym environments
+            make_env_args (dict): The arguments of the function that creates a gym.Env
+            n_envs ([int]): The number of environments to create.
+            input (str, optional): [the name of the action variable in the workspace]. Defaults to "action".
+            output (str, optional): [the output prefix of the environment]. Defaults to "env/".
+            use_seed (bool, optional): [If True, then the seed is chained to the environments, and each environment will have its own seed]. Defaults to True.
+        """
         super().__init__()
+        self.use_seed=use_seed
         assert n_envs > 0
 
         self.envs = None
@@ -245,8 +267,9 @@ class AutoResetGymAgent(TAgent):
     def _initialize_envs(self, n):
         assert self._seed is not None, "[GymAgent] seeds must be specified"
         self.envs = [self.make_env_fn(**self.env_args) for k in range(n)]
-        for k in range(n):
-            self.envs[k].seed(self._seed + k)
+        if self.use_seed:
+            for k in range(n):
+                self.envs[k].seed(self._seed + k)
         self.n_envs = n
         self.timestep = 0
         self.finished = torch.tensor([True for e in self.envs])
@@ -343,3 +366,24 @@ class AutoResetGymAgent(TAgent):
         assert (
             self.envs is None
         ), "[GymAgent.seed] Seeding only possible before running the agent"
+
+class NoAutoResetGymAgent(GymAgent):
+    """ Create an Agent from a gyn environment
+    """
+    def __init__(
+        self,
+        make_env_fn=None,
+        make_env_args={},
+        n_envs=None,
+        input="action",
+        output="env/",
+        use_seed=True
+    ):
+        super().__init__(
+            make_env_fn=make_env_fn,
+            make_env_args=make_env_args,
+            n_envs=n_envs,
+            input=input,
+            output=output,
+            use_seed=use_seed
+        )
